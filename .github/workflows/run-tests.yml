@@ -83,13 +83,13 @@ jobs:
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
     - name: Install LLVM via Homebrew (macOS only)
-      if: runner.os == 'Darwin'
+      if: runner.os == 'macOS'
       run: |-
         brew install llvm@20
         # Homebrew formula names can change, so we ensure it links correctly if necessary
         brew link --force --overwrite llvm@20
     - name: Configure LLVM Environment Variables (macOS only)
-      if: runner.os == 'Darwin'
+      if: runner.os == 'macOS'
       run: |-
         # Determine the LLVM install prefix dynamically
         LLVM_PREFIX=$(brew --prefix llvm@20)
