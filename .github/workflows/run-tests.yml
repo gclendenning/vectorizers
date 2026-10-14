@@ -21,12 +21,12 @@ jobs:
     runs-on:
       - "${{ matrix.imageName }}"
     strategy:
+      # Don't stop other jobs if one fails
+      fail-fast: false
       matrix:
         include:
         - imageName: macOS-latest
           python.version: '3.11'
-        - imageName: macOS-26-intel
-          python.version: '3.11'
         - imageName: ubuntu-latest
           python.version: '3.11'
         - imageName: ubuntu-26.04-arm
@@ -34,8 +34,6 @@ jobs:
         - imageName: windows-latest
           python.version: '3.11'
         - imageName: macOS-latest
-          python.version: '3.12'
-        - imageName: macOS-26-intel
           python.version: '3.12'
         - imageName: ubuntu-latest
           python.version: '3.12'
@@ -45,8 +43,6 @@ jobs:
           python.version: '3.12'
         - imageName: macOS-latest
           python.version: '3.13'
-        - imageName: macOS-26-intel
-          python.version: '3.13'
         - imageName: ubuntu-latest
           python.version: '3.13'
         - imageName: ubuntu-26.04-arm
@@ -55,8 +51,6 @@ jobs:
           python.version: '3.13'
         - imageName: macOS-latest
           python.version: '3.14'
-        - imageName: macOS-26-intel
-          python.version: '3.14'
         - imageName: ubuntu-latest
           python.version: '3.14'
         - imageName: ubuntu-26.04-arm
@@ -64,8 +58,6 @@ jobs:
         - imageName: windows-latest
           python.version: '3.14'
         - imageName: macOS-latest
-          python.version: '3.15'
-        - imageName: macOS-26-intel
           python.version: '3.15'
         - imageName: ubuntu-latest
           python.version: '3.15'
@@ -82,26 +74,26 @@ jobs:
         python-version: "${{ matrix.python.version }}"
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
-    - name: Install LLVM via Homebrew (macOS only)
-      if: runner.os == 'macOS'
-      run: |-
-        brew install llvm@20
-        # Homebrew formula names can change, so we ensure it links correctly if necessary
-        brew link --force --overwrite llvm@20
-    - name: Configure LLVM Environment Variables (macOS only)
-      if: runner.os == 'macOS'
-      run: |-
-        # Determine the LLVM install prefix dynamically
-        LLVM_PREFIX=$(brew --prefix llvm@20)
-        # Set the LLVM_CONFIG environment variable used by llvmlite's build script
-        echo "LLVM_CONFIG=$LLVM_PREFIX/bin/llvm-config" >> "$GITHUB_ENV"
-        echo "LLVM_CONFIG set to: $LLVM_PREFIX/bin/llvm-config"
-        # Also set CMAKE_PREFIX_PATH in case other dependencies need it
-        echo "CMAKE_PREFIX_PATH=$LLVM_PREFIX/lib/cmake" >> "$GITHUB_ENV"
+    # - name: Install LLVM via Homebrew (macOS only)
+    #   if: runner.os == 'macOS'
+    #   run: |-
+    #     brew install llvm@20
+    #     # Homebrew formula names can change, so we ensure it links correctly if necessary
+    #     brew link --force --overwrite llvm@20
+    # - name: Configure LLVM Environment Variables (macOS only)
+    #   if: runner.os == 'macOS'
+    #   run: |-
+    #     # Determine the LLVM install prefix dynamically
+    #     LLVM_PREFIX=$(brew --prefix llvm@20)
+    #     # Set the LLVM_CONFIG environment variable used by llvmlite's build script
+    #     echo "LLVM_CONFIG=$LLVM_PREFIX/bin/llvm-config" >> "$GITHUB_ENV"
+    #     echo "LLVM_CONFIG set to: $LLVM_PREFIX/bin/llvm-config"
+    #     # Also set CMAKE_PREFIX_PATH in case other dependencies need it
+    #     echo "CMAKE_PREFIX_PATH=$LLVM_PREFIX/lib/cmake" >> "$GITHUB_ENV"
     - name: Install package and dependencies
-      env:
-        LLVM_CONFIG: "${{ env.LLVM_CONFIG }}"
-        CMAKE_PREFIX_PATH: "${{ env.CMAKE_PREFIX_PATH }}"
+      # env:
+      #   LLVM_CONFIG: "${{ env.LLVM_CONFIG }}"
+      #   CMAKE_PREFIX_PATH: "${{ env.CMAKE_PREFIX_PATH }}"
       run: |-
         python -m pip install -U uv
         uv sync --group cicd
