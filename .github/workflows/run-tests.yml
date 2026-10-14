@@ -19,7 +19,7 @@ env:
 jobs:
   RunAllTests-run_platform_tests:
     runs-on:
-      - "${{ matrix.imageName }}"
+      - "${{ matrix.image-name }}"
     strategy:
       # Don't stop other jobs if one fails
       fail-fast: false
