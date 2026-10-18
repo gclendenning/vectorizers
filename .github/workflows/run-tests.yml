@@ -38,6 +38,6 @@ jobs:
         python-version: "${{ matrix.python-version }}"
     - name: Install package and dependencies
       run: |-
-        uv sync --group cicd --locked
+        uv sync --group cicd
     - name: Run tests
       run: uv run pytest vectorizers/tests --show-capture=no -v --disable-warnings
